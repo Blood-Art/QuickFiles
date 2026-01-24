@@ -10,15 +10,26 @@ import edit
 def listContent(path=Path()):
     try:
         currDirContent = path.iterdir()
-
+        currDirSortedList = []
         if not os.listdir(path):
             print(" There is nothing here.")
             return 0
 
         else:
+            count = 0
+            startNewLine = 10
             for path in currDirContent:
-                print(f" {path}", end=" ")
+                currDirSortedList.append(path.name)
 
+            for sortedPath in sorted(currDirSortedList, key=str.lower):
+                count += 1
+
+                if count <= startNewLine:
+                    print(f" ({sortedPath})", end=" ")
+
+                else:
+                    print()
+                    count = 0
         print()
 
     except NotADirectoryError:
@@ -26,6 +37,9 @@ def listContent(path=Path()):
 
     except FileNotFoundError:
         print(f" Path '{path}' was not found")
+
+    except PermissionError:
+        print(f" You don't have permission to list '{path}'")
 
 
 def menu():
@@ -35,7 +49,7 @@ def menu():
         "2": "List current working directory 🧰",
         "3": "Change directory 🏃",
         "4": "Create a file/directory 👷",
-        "5": "Remove a file/directory 🙅‍♂️",
+        "5": "Remove a file/directory ❌",
         "9": "Quit 🫡",
     }
     is_on = True
@@ -46,26 +60,33 @@ def menu():
         for key, value in options.items():
             print(f"\n {key} - {value}")
 
-        choice = input("\n Choice : ")
+        choice = input("\n\n Choice : ")
 
         # Allow for dynamic options by combining the option with the path in the same line
         # Filter (Remove) all the numbers and spaces from the users choice
-        filterTable = str.maketrans("", "", "123456789 ")
+        filteredPathTable = str.maketrans("", "", "123456789 ")
 
-        filteredChoice = choice.translate(filterTable)
+        filteredPath = choice.translate(filteredPathTable)
 
-        augmentedPath = Path(filteredChoice)
+        filteredChoice = "".join(filter(str.isdigit, choice))
 
-        # if choice not in options.keys():
-        #     print(" Not a valid option.")
-        #     print(f"{choice} {Path()}")
-        #     # continue
+        augmentedPath = Path(filteredPath)
+
+        if filteredChoice not in options.keys():
+            print(" Not a valid option.")
+            continue
 
         if choice == f"2 {augmentedPath}":
             listContent(Path(augmentedPath))
 
         elif choice == f"3 {augmentedPath}":
             travel.changeDir(augmentedPath)
+
+        elif choice == f"4 {augmentedPath}":
+            edit.createPath(augmentedPath)
+
+        elif choice == f"5 {augmentedPath}":
+            edit.removePath(augmentedPath)
 
         if choice == "1":
             travel.goHome()
