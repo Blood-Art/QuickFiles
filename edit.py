@@ -109,49 +109,86 @@ def removePath(fullpath=Path()):
         break
 
 
-def copyPath(fullpath=Path(), destination=Path()):
+def copyPath(target=Path(), destination=Path()):
     while True:
         name = ""
         where = ""
-        if fullpath == Path():
+
+        if target == Path():
             name = input(" Name of the file/directory to copy? or r to return : ")
-            fullpath = Path(name).absolute()
+            target = Path(name).absolute()
 
         if name.lower() == "r":
             return 0
 
-        if fullpath.exists():
+        if target.exists():
             break
 
         else:
-            print(f" '{fullpath.name}' does not exist")
+            print(f" '{target.name}' does not exist")
+            target = Path()
             continue
 
     while True:
+        home_replacement = ""
+        destination_no_name = ""
+
         if destination == Path():
-            where = input(" Where do you want to copy the file/directory to? : ")
-            destination = Path(where).absolute()
+            where = input(f" Where do you want to copy '{target.name}' to? : ")
+            destination_no_name = Path(where).absolute()
+            destination = destination_no_name / target.name
 
-        if where == "~":
-            destination = Path().home()
+        if where[0] == "~":
+            home_path = Path().home()
+            home_replacement = Path(where.replace("~", str(home_path)))
+            destination_no_name = home_replacement
+            destination = destination_no_name / target.name
 
-        if not destination.exists():
-            print(f" '{destination}' does not exist.")
+        if not destination.parent.exists():
+            print(f" '{destination_no_name}' does not exist.")
             destination = Path()
             continue
 
+        if Path(destination).exists():
+            print(f"\n '{destination.name}' already exists in {destination_no_name}.")
+            return 0
+
+        if destination.is_file():
+            while True:
+                confirmation = input(
+                    f"\n WARNING '{destination.name}' is a file, if you choose to continue {destination.name} will be overwritten are you sure? (y/n) : "
+                )
+
+                if confirmation.lower() == "y":
+                    break
+
+                elif confirmation.lower() == "n":
+                    return 0
+
+                else:
+                    print(
+                        f"\n '{confirmation}' is invalid, please enter y for yes or n for no."
+                    )
+                    continue
+
         try:
-            shutil.copy2(fullpath, destination)
-            print(f"'{fullpath.name}' has been succesfully copied to {destination}! ")
+            if target.is_file():
+                shutil.copy2(target, destination)
+
+            elif target.is_dir():
+                shutil.copytree(target, destination)
+            print(
+                f"'{target.name}' has been succesfully copied to {home_replacement}! "
+            )
             break
 
         except FileNotFoundError:
-            print(f"\n path '{fullpath}' wasn't found.")
+            print(f"\n path '{target}' wasn't found.")
 
         except NotADirectoryError:
             pass
 
         except PermissionError:
             print(
-                f" You don't have permission to copy '{fullpath.name}' into {destination}."
+                f" You don't have permission to copy '{target.name}' into {destination}."
             )
