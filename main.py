@@ -2,8 +2,6 @@ from pathlib import Path
 
 import subprocess
 
-import time
-
 import os
 
 import travel
@@ -38,17 +36,16 @@ def listContent(path=Path()):
         print(f"\n {'-' * 90}")
 
     except NotADirectoryError:
-        print(f"'{path}' is not a directory")
+        print(f"'{path}' is not a directory.")
 
     except FileNotFoundError:
-        print(f" Path '{path}' was not found")
+        print(f" Path '{path}' was not found.")
 
     except PermissionError:
-        print(f" You don't have permission to list '{path}'")
+        print(f" You don't have permission to list '{path}'.")
 
 
 def menu():
-    # listContent(Path("/usr/share/applications/"))
     options = {
         "1": "Go to home directory 🏠",
         "2": "List current working directory 🧰",
@@ -71,6 +68,7 @@ def menu():
         choice = input("\n\n Choice : ")
 
         subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
+
         # Allow for dynamic options by combining the option with the path in the same line
         # Filter (Remove) all the numbers and spaces from the users choice
         filteredPathTable = str.maketrans("", "", "123456789 ")
@@ -111,6 +109,9 @@ def menu():
 
         elif choice == "5":
             edit.removePath()
+
+        elif choice == "6":
+            edit.copyPath()
 
         elif choice == "9":
             print(" have a good day! 🫡")

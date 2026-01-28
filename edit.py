@@ -67,7 +67,7 @@ def removePath(fullpath=Path()):
     while True:
         name = ""
         if fullpath == Path():
-            name = input(" Name of the file/directory? or r to return : ")
+            name = input(" Name of the file/directory? to remove or r to return : ")
             fullpath = Path(name).absolute()
 
         if name == "r".lower():
@@ -107,3 +107,51 @@ def removePath(fullpath=Path()):
                 print(f" You don't have permission to remove '{fullpath}' here")
 
         break
+
+
+def copyPath(fullpath=Path(), destination=Path()):
+    while True:
+        name = ""
+        where = ""
+        if fullpath == Path():
+            name = input(" Name of the file/directory to copy? or r to return : ")
+            fullpath = Path(name).absolute()
+
+        if name.lower() == "r":
+            return 0
+
+        if fullpath.exists():
+            break
+
+        else:
+            print(f" '{fullpath.name}' does not exist")
+            continue
+
+    while True:
+        if destination == Path():
+            where = input(" Where do you want to copy the file/directory to? : ")
+            destination = Path(where).absolute()
+
+        if where == "~":
+            destination = Path().home()
+
+        if not destination.exists():
+            print(f" '{destination}' does not exist.")
+            destination = Path()
+            continue
+
+        try:
+            shutil.copy2(fullpath, destination)
+            print(f"'{fullpath.name}' has been succesfully copied to {destination}! ")
+            break
+
+        except FileNotFoundError:
+            print(f"\n path '{fullpath}' wasn't found.")
+
+        except NotADirectoryError:
+            pass
+
+        except PermissionError:
+            print(
+                f" You don't have permission to copy '{fullpath.name}' into {destination}."
+            )
