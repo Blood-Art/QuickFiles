@@ -9,7 +9,7 @@ import travel
 import edit
 
 
-def listContent(path=Path()):
+def listContent(path=Path(), showHidden=False):
     try:
         currDirContent = path.iterdir()
         currDirList = []
@@ -21,7 +21,12 @@ def listContent(path=Path()):
             row_count = 0
             row_size = 5
             for path in currDirContent:
-                currDirList.append(path.name)
+                if not showHidden:
+                    if path.name[0] != ".":
+                        currDirList.append(path.name)
+
+                else:
+                    currDirList.append(path.name)
 
             currDirSortedList = sorted(currDirList, key=str.lower)
             print(f" {'-' * 90}")
@@ -84,7 +89,7 @@ def menu():
             continue
 
         if choice == f"2 {augmentedPath}":
-            listContent(Path(augmentedPath))
+            listContent(Path(augmentedPath), showHidden=True)
 
         elif choice == f"3 {augmentedPath}":
             travel.changeDir(augmentedPath)
