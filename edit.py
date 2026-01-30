@@ -73,6 +73,12 @@ def removePath(fullpath=Path()):
         if name == "r".lower():
             return 0
 
+        print(str(fullpath)[0])
+
+        if str(fullpath)[0] == "~":
+            homePath = Path().home()
+            fullpath = Path(str(fullpath).replace("~", str(homePath)))
+
         if fullpath.exists():
             pass
 
@@ -87,7 +93,7 @@ def removePath(fullpath=Path()):
         if confirmation.lower() == "n":
             return 0
 
-        elif confirmation.lower() == "y" or confirmation == "\n":
+        elif confirmation.lower() == "y" or confirmation == "":
             try:
                 if fullpath.is_dir():
                     shutil.rmtree(fullpath)
@@ -133,6 +139,7 @@ def copyPath(target=Path(), destination=Path()):
         home_replacement = ""
         destination_no_name = ""
 
+        # there is no augmented path
         if destination == Path():
             where = input(f" Where do you want to copy '{target.name}' to? : ")
             destination_no_name = Path(where).absolute()
@@ -178,7 +185,7 @@ def copyPath(target=Path(), destination=Path()):
             elif target.is_dir():
                 shutil.copytree(target, destination)
             print(
-                f"'{target.name}' has been succesfully copied to {home_replacement}! "
+                f"'{target.name}' has been succesfully copied to {destination_no_name}! "
             )
             break
 
