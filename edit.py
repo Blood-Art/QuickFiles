@@ -1,4 +1,3 @@
-from os.path import isfile
 from pathlib import Path
 
 import os
@@ -6,8 +5,14 @@ import os
 import shutil
 
 
+homePath = Path().home()
+
+
 def createPath(path=Path(), type: str = ""):
     while True:
+        if str(path)[0] == "~":
+            home_replacement = Path(str(path).replace("~", str(homePath)))
+            path = home_replacement
         type = input(" File or directory? (f/d) or r to return : ").lower()
 
         if type != "f" and type != "d" and type != "r":
@@ -75,7 +80,6 @@ def removePath(fullpath=Path()):
             return 0
 
         if str(fullpath)[0] == "~":
-            homePath = Path().home()
             fullpath = Path(str(fullpath).replace("~", str(homePath)))
 
         if fullpath.exists():
@@ -150,6 +154,10 @@ def copyPath(target=Path(), destination=Path()):
             where = input(f" Where do you want to copy '{target.name}' to? : ")
             destination_no_name = Path(where).absolute()
             destination = destination_no_name / target.name
+
+        if not where:
+            destination = Path()
+            continue
 
         if where[0] == "~":
             home_path = Path().home()
