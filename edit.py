@@ -1,3 +1,4 @@
+from os.path import isfile
 from pathlib import Path
 
 import os
@@ -73,19 +74,18 @@ def removePath(fullpath=Path()):
         if name == "r".lower():
             return 0
 
-        print(str(fullpath)[0])
-
         if str(fullpath)[0] == "~":
             homePath = Path().home()
             fullpath = Path(str(fullpath).replace("~", str(homePath)))
 
         if fullpath.exists():
-            pass
+            break
 
         else:
             print(f" path '{fullpath}' does not exist")
             return 0
 
+    while True:
         confirmation = input(
             f" Are you sure? '{fullpath}' will be permanently removed (y/n) : "
         )
@@ -111,6 +111,12 @@ def removePath(fullpath=Path()):
 
             except PermissionError:
                 print(f" You don't have permission to remove '{fullpath}' here")
+
+        else:
+            print(
+                f" '{confirmation}' is invalid, please enter y or enter for yes or n for no."
+            )
+            continue
 
         break
 
@@ -156,17 +162,13 @@ def copyPath(target=Path(), destination=Path()):
             destination = Path()
             continue
 
-        if Path(destination).exists():
-            print(f"\n '{destination.name}' already exists in {destination_no_name}.")
-            return 0
-
         if destination.is_file():
             while True:
                 confirmation = input(
                     f"\n WARNING '{destination.name}' is a file, if you choose to continue {destination.name} will be overwritten are you sure? (y/n) : "
                 )
 
-                if confirmation.lower() == "y":
+                if confirmation.lower() == "y" or confirmation == "":
                     break
 
                 elif confirmation.lower() == "n":
@@ -174,9 +176,13 @@ def copyPath(target=Path(), destination=Path()):
 
                 else:
                     print(
-                        f"\n '{confirmation}' is invalid, please enter y for yes or n for no."
+                        f"\n '{confirmation}' is invalid, please enter y or enter for yes or n for no."
                     )
                     continue
+
+        if Path(destination).exists() and not target.is_file():
+            print(f"\n '{destination.name}' already exists in {destination_no_name}.")
+            return 0
 
         try:
             if target.is_file():

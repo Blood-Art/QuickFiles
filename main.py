@@ -10,16 +10,25 @@ import edit
 
 
 def listContent(path=Path(), showHidden=False):
+    home_path = Path().home()
+
+    if str(path)[0] == "~":
+        new_home_path = Path(str(path).replace("~", str(home_path)))
+        path = new_home_path
+
     try:
         currDirContent = path.iterdir()
         currDirList = []
+
         if not os.listdir(path):
             print(" There is nothing here.")
             return 0
 
         else:
             row_count = 0
-            row_size = 5
+            row_size = 3
+            num_of_dashes = 90
+            spacing = 25
             for path in currDirContent:
                 if not showHidden:
                     if path.name[0] != ".":
@@ -29,14 +38,17 @@ def listContent(path=Path(), showHidden=False):
                     currDirList.append(path.name)
 
             currDirSortedList = sorted(currDirList, key=str.lower)
-            print(f" {'-' * 90}")
+            print(f" {'-' * num_of_dashes}")
+            print(" " * spacing, end="")
             for sortedPath in currDirSortedList:
                 row_count += 1
                 print(f" ({sortedPath})", end=" ")
 
                 if row_count >= row_size and sortedPath != currDirSortedList[-1]:
                     print()
+                    print(" " * spacing, end="")
                     row_count = 0
+            print(" " * spacing, end="")
 
         print(f"\n {'-' * 90}")
 
@@ -76,16 +88,26 @@ def menu():
 
         # Allow for dynamic options by combining the option with the path in the same line
         # Filter (Remove) all the numbers and spaces from the users choice
-        filteredPathTable = str.maketrans("", "", "123456789 ")
+        # filteredPathTable = str.maketrans("", "", "123456789 ")
+        #
+        # filteredPath = choice.translate(filteredPathTable)
 
-        filteredPath = choice.translate(filteredPathTable)
+        # filteredChoice = "".join(filter(str.isdigit, choice))
 
-        filteredChoice = "".join(filter(str.isdigit, choice))
+        filteredChoice = ""
+        for char in choice:
+            if char == " ":
+                break
+
+            else:
+                filteredChoice += char
+
+        filteredPath = choice[2 : len(choice)]
 
         augmentedPath = Path(filteredPath)
 
         if filteredChoice not in options.keys():
-            print(" Not a valid option.")
+            print(f"'{filteredChoice}' is not a valid option.")
             continue
 
         if choice == f"2 {augmentedPath}":
