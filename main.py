@@ -9,7 +9,7 @@ import travel
 import edit
 
 
-def listContent(path=Path(), showHidden=False):
+def list_content(path=Path(), show_hidden=False):
     home_path = Path().home()
 
     if str(path)[0] == "~":
@@ -17,8 +17,8 @@ def listContent(path=Path(), showHidden=False):
         path = new_home_path
 
     try:
-        currDirContent = path.iterdir()
-        currDirList = []
+        directory_content = path.iterdir()
+        directory_list = []
 
         if not os.listdir(path):
             print(" There is nothing here.")
@@ -29,22 +29,22 @@ def listContent(path=Path(), showHidden=False):
             row_size = 3
             num_of_dashes = 90
             spacing = 25
-            for path in currDirContent:
-                if not showHidden:
+            for path in directory_content:
+                if not show_hidden:
                     if path.name[0] != ".":
-                        currDirList.append(path.name)
+                        directory_list.append(path.name)
 
                 else:
-                    currDirList.append(path.name)
+                    directory_list.append(path.name)
 
-            currDirSortedList = sorted(currDirList, key=str.lower)
+            directory_sorted = sorted(directory_list, key=str.lower)
             print(f" {'-' * num_of_dashes}")
             print(" " * spacing, end="")
-            for sortedPath in currDirSortedList:
+            for sorted_path in directory_sorted:
                 row_count += 1
-                print(f" ({sortedPath})", end=" ")
+                print(f" ({sorted_path})", end=" ")
 
-                if row_count >= row_size and sortedPath != currDirSortedList[-1]:
+                if row_count >= row_size and sorted_path != directory_sorted[-1]:
                     print()
                     print(" " * spacing, end="")
                     row_count = 0
@@ -60,6 +60,19 @@ def listContent(path=Path(), showHidden=False):
 
     except PermissionError:
         print(f" You don't have permission to list '{path}'.")
+
+
+def filter_input(choice: str, filtered_choice=""):
+    for char in choice:
+        if char == " ":
+            break
+
+        else:
+            filtered_choice += char
+
+    filtered_path = choice[len(filtered_choice) + 1 : len(choice)]
+
+    return filtered_choice, filtered_path
 
 
 def menu():
@@ -88,57 +101,51 @@ def menu():
 
         # Allow for dynamic options by combining the option with the path in the same line
         # Filter (Remove) all the numbers and spaces from the users choice
-        # filteredPathTable = str.maketrans("", "", "123456789 ")
-        #
-        # filteredPath = choice.translate(filteredPathTable)
 
-        # filteredChoice = "".join(filter(str.isdigit, choice))
+        filtered_choice = filter_input(choice)[0]
 
-        filteredChoice = ""
-        for char in choice:
-            if char == " ":
-                break
+        filtered_path = filter_input(choice)[1]
 
-            else:
-                filteredChoice += char
+        print(filtered_choice)
 
-        filteredPath = choice[2 : len(choice)]
+        print(filtered_path)
 
-        augmentedPath = Path(filteredPath)
+        augmented_path = Path(filtered_path)
 
-        if filteredChoice not in options.keys():
-            print(f"'{filteredChoice}' is not a valid option.")
+        if filtered_choice not in options.keys():
+            print(f"'{filtered_choice}' is not a valid option.")
+
             continue
 
-        if choice == f"2 {augmentedPath}":
-            listContent(Path(augmentedPath), showHidden=True)
+        if choice == f"2 {augmented_path}":
+            list_content(Path(augmented_path), show_hidden=True)
 
-        elif choice == f"3 {augmentedPath}":
-            travel.changeDir(augmentedPath)
+        elif choice == f"3 {augmented_path}":
+            travel.change_dir(augmented_path)
 
-        elif choice == f"4 {augmentedPath}":
-            edit.createPath(augmentedPath)
+        elif choice == f"4 {augmented_path}":
+            edit.create_path(augmented_path)
 
-        elif choice == f"5 {augmentedPath}":
-            edit.removePath(augmentedPath)
+        elif choice == f"5 {augmented_path}":
+            edit.remove_path(augmented_path)
 
         if choice == "1":
-            travel.goHome()
+            travel.go_home()
 
         elif choice == "2":
-            listContent()
+            list_content()
 
         elif choice == "3":
-            travel.changeDir()
+            travel.change_dir()
 
         elif choice == "4":
-            edit.createPath()
+            edit.create_path()
 
         elif choice == "5":
-            edit.removePath()
+            edit.remove_path()
 
         elif choice == "6":
-            edit.copyPath()
+            edit.copy_path()
 
         elif choice == "9":
             print(" have a good day! 🫡")

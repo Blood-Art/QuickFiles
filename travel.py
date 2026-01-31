@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 
-def goHome(homeDir=Path().home()):
+def go_home(homeDir=Path().home()):
     if not homeDir.exists():
         print(" No home directory was found!")
         return 0
@@ -11,7 +11,7 @@ def goHome(homeDir=Path().home()):
     return os.chdir(homeDir)
 
 
-def changeDir(path=Path()):
+def change_dir(path=Path()):
     if path == Path():
         path = input(" Change to which path? or r to return : ")
 

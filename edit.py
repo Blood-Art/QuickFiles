@@ -5,13 +5,13 @@ import os
 import shutil
 
 
-homePath = Path().home()
+home_path = Path().home()
 
 
-def createPath(path=Path(), type: str = ""):
+def create_path(path=Path(), type: str = ""):
     while True:
         if str(path)[0] == "~":
-            home_replacement = Path(str(path).replace("~", str(homePath)))
+            home_replacement = Path(str(path).replace("~", str(home_path)))
             path = home_replacement
         type = input(" File or directory? (f/d) or r to return : ").lower()
 
@@ -69,29 +69,29 @@ def createPath(path=Path(), type: str = ""):
         break
 
 
-def removePath(fullpath=Path()):
+def remove_path(full_path=Path()):
     while True:
         name = ""
-        if fullpath == Path():
+        if full_path == Path():
             name = input(" Name of the file/directory? to remove or r to return : ")
-            fullpath = Path(name).absolute()
+            full_path = Path(name).absolute()
 
         if name == "r".lower():
             return 0
 
-        if str(fullpath)[0] == "~":
-            fullpath = Path(str(fullpath).replace("~", str(homePath)))
+        if str(full_path)[0] == "~":
+            full_path = Path(str(full_path).replace("~", str(home_path)))
 
-        if fullpath.exists():
+        if full_path.exists():
             break
 
         else:
-            print(f" path '{fullpath}' does not exist")
+            print(f" path '{full_path}' does not exist")
             return 0
 
     while True:
         confirmation = input(
-            f" Are you sure? '{fullpath}' will be permanently removed (y/n) : "
+            f" Are you sure? '{full_path}' will be permanently removed (y/n) : "
         )
 
         if confirmation.lower() == "n":
@@ -99,22 +99,22 @@ def removePath(fullpath=Path()):
 
         elif confirmation.lower() == "y" or confirmation == "":
             try:
-                if fullpath.is_dir():
-                    shutil.rmtree(fullpath)
-                    print(f" directory '{fullpath}' was removed succesfully!")
+                if full_path.is_dir():
+                    shutil.rmtree(full_path)
+                    print(f" directory '{full_path}' was removed succesfully!")
 
-                elif fullpath.is_file():
-                    os.remove(fullpath)
-                    print(f" file '{fullpath}' was removed succesfully!")
+                elif full_path.is_file():
+                    os.remove(full_path)
+                    print(f" file '{full_path}' was removed succesfully!")
 
                 else:
                     print(" Error can't delete that.")
 
             except FileNotFoundError:
-                print(f"\n path '{fullpath}' wasn't found.")
+                print(f"\n path '{full_path}' wasn't found.")
 
             except PermissionError:
-                print(f" You don't have permission to remove '{fullpath}' here")
+                print(f" You don't have permission to remove '{full_path}' here")
 
         else:
             print(
@@ -125,7 +125,7 @@ def removePath(fullpath=Path()):
         break
 
 
-def copyPath(target=Path(), destination=Path()):
+def copy_path(target=Path(), destination=Path()):
     while True:
         name = ""
         where = ""
