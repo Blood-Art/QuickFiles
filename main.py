@@ -26,9 +26,9 @@ def list_content(path=Path(), show_hidden=False):
 
         else:
             row_count = 0
-            row_size = 3
+            row_size = 4
             num_of_dashes = 90
-            spacing = 25
+            spacing = 20
             for path in directory_content:
                 if not show_hidden:
                     if path.name[0] != ".":
@@ -44,6 +44,7 @@ def list_content(path=Path(), show_hidden=False):
                 row_count += 1
                 print(f" ({sorted_path})", end=" ")
 
+                # starting a new line except if it's the list one in the list.
                 if row_count >= row_size and sorted_path != directory_sorted[-1]:
                     print()
                     print(" " * spacing, end="")
@@ -61,6 +62,9 @@ def list_content(path=Path(), show_hidden=False):
     except PermissionError:
         print(f" You don't have permission to list '{path}'.")
 
+    except Exception as e:
+        print(f" Couldn't proceed {e}")
+
 
 def filter_input(choice: str, filtered_choice=""):
     for char in choice:
@@ -70,6 +74,7 @@ def filter_input(choice: str, filtered_choice=""):
         else:
             filtered_choice += char
 
+    # Path starts at the end of the users choice.
     filtered_path = choice[len(filtered_choice) + 1 : len(choice)]
 
     return filtered_choice, filtered_path
@@ -89,6 +94,7 @@ def menu():
     }
     is_on = True
 
+    print(f" {'*' * 20} WELCOME {'*' * 20}")
     while is_on:
         currentpath = Path().absolute()
         print(f"\n Current path : [{currentpath}] 🧭")
@@ -97,8 +103,6 @@ def menu():
 
         choice = input("\n\n Choice : ")
 
-        subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
-
         # Allow for dynamic options by combining the option with the path in the same line
         # Filter (Remove) all the numbers and spaces from the users choice
 
@@ -106,50 +110,52 @@ def menu():
 
         filtered_path = filter_input(choice)[1]
 
-        print(filtered_choice)
-
-        print(filtered_path)
-
         augmented_path = Path(filtered_path)
 
         if filtered_choice not in options.keys():
             print(f"'{filtered_choice}' is not a valid option.")
-
             continue
 
-        if choice == f"2 {augmented_path}":
-            list_content(Path(augmented_path), show_hidden=True)
+        subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
+        try:
+            if choice == f"2 {augmented_path}":
+                list_content(Path(augmented_path), show_hidden=True)
 
-        elif choice == f"3 {augmented_path}":
-            travel.change_dir(augmented_path)
+            elif choice == f"3 {augmented_path}":
+                travel.change_dir(augmented_path)
 
-        elif choice == f"4 {augmented_path}":
-            edit.create_path(augmented_path)
+            elif choice == f"4 {augmented_path}":
+                edit.create_path(augmented_path)
 
-        elif choice == f"5 {augmented_path}":
-            edit.remove_path(augmented_path)
+            elif choice == f"5 {augmented_path}":
+                edit.remove_path(augmented_path)
 
-        if choice == "1":
-            travel.go_home()
+            elif choice == f"5 {augmented_path}":
+                edit.remove_path(augmented_path)
+            if choice == "1":
+                travel.go_home()
 
-        elif choice == "2":
-            list_content()
+            elif choice == "2":
+                list_content()
 
-        elif choice == "3":
-            travel.change_dir()
+            elif choice == "3":
+                travel.change_dir()
 
-        elif choice == "4":
-            edit.create_path()
+            elif choice == "4":
+                edit.create_path()
 
-        elif choice == "5":
-            edit.remove_path()
+            elif choice == "5":
+                edit.remove_path()
 
-        elif choice == "6":
-            edit.copy_path()
+            elif choice == "6":
+                edit.copy_path()
 
-        elif choice == "9":
-            print(" have a good day! 🫡")
-            is_on = False
+            elif choice == "9":
+                print(" have a good day! 🫡")
+                is_on = False
+
+        except Exception as e:
+            print(f" Couldn't proceed {e}")
 
 
 def main():

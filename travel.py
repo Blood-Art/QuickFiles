@@ -2,13 +2,15 @@ import os
 
 from pathlib import Path
 
+home_dir = Path().home()
 
-def go_home(homeDir=Path().home()):
-    if not homeDir.exists():
+
+def go_home():
+    if not home_dir.exists():
         print(" No home directory was found!")
         return 0
 
-    return os.chdir(homeDir)
+    return os.chdir(home_dir)
 
 
 def change_dir(path=Path()):
@@ -17,6 +19,10 @@ def change_dir(path=Path()):
 
     if path == "r":
         return 0
+
+    if str(path)[0] == "~":
+        home_sign = str(path).replace("~", str(home_dir))
+        path = Path(home_sign)
 
     try:
         os.chdir(path)
