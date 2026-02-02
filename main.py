@@ -66,18 +66,21 @@ def list_content(path=Path(), show_hidden=False):
         print(f" Couldn't proceed {e}")
 
 
-def filter_input(choice: str, filtered_choice=""):
-    for char in choice:
-        if char == " ":
-            break
+def filter_input(
+    choice: str, filtered_choice="", filtered_path="", filtered_destination=""
+):
+    inputs = choice.split(" ")
 
-        else:
-            filtered_choice += char
+    if len(inputs) >= 1:
+        filtered_choice = inputs[0]
 
-    # Path starts at the end of the users choice.
-    filtered_path = choice[len(filtered_choice) + 1 : len(choice)]
+    if len(inputs) >= 2:
+        filtered_path = inputs[1]
 
-    return filtered_choice, filtered_path
+    if len(inputs) >= 3:
+        filtered_destination = inputs[2]
+
+    return filtered_choice, filtered_path, filtered_destination
 
 
 def menu():
@@ -106,17 +109,17 @@ def menu():
         # Allow for dynamic options by combining the option with the path in the same line
         # Filter (Remove) all the numbers and spaces from the users choice
 
-        filtered_choice = filter_input(choice)[0]
-
-        filtered_path = filter_input(choice)[1]
+        filtered_choice, filtered_path, filtered_destination = filter_input(choice)
 
         augmented_path = Path(filtered_path)
+
+        augmented_destination = Path(filtered_destination)
 
         if filtered_choice not in options.keys():
             print(f"'{filtered_choice}' is not a valid option.")
             continue
 
-        subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
+        # subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
         try:
             if choice == f"2 {augmented_path}":
                 list_content(Path(augmented_path), show_hidden=True)
@@ -131,7 +134,11 @@ def menu():
                 edit.remove_path(augmented_path)
 
             elif choice == f"5 {augmented_path}":
-                edit.remove_path(augmented_path)
+                edit.remove_path(augmented_path, is_augmented=True)
+
+            elif choice == f"6 {augmented_path} {augmented_destination}":
+                edit.copy_path(augmented_path, augmented_destination, is_augmented=True)
+
             if choice == "1":
                 travel.go_home()
 
@@ -145,10 +152,10 @@ def menu():
                 edit.create_path()
 
             elif choice == "5":
-                edit.remove_path()
+                edit.remove_path(is_augmented=False)
 
             elif choice == "6":
-                edit.copy_path()
+                edit.copy_path(is_augmented=False)
 
             elif choice == "9":
                 print(" have a good day! 🫡")

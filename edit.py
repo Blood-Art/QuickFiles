@@ -69,10 +69,10 @@ def create_path(path=Path(), type: str = ""):
         break
 
 
-def remove_path(full_path=Path()):
+def remove_path(full_path=Path(), is_augmented=True):
     while True:
         name = ""
-        if full_path == Path():
+        if not is_augmented:
             name = input(" Name of the file/directory? to remove or r to return : ")
             full_path = Path(name).absolute()
 
@@ -125,12 +125,12 @@ def remove_path(full_path=Path()):
         break
 
 
-def copy_path(target=Path(), destination=Path()):
+def copy_path(target=Path(), destination=Path(), is_augmented=True):
     while True:
         name = ""
         where = ""
 
-        if target == Path():
+        if not is_augmented:
             name = input(" Name of the file/directory to copy? or r to return : ")
             target = Path(name).absolute()
 
@@ -140,7 +140,7 @@ def copy_path(target=Path(), destination=Path()):
         if target.exists():
             break
 
-        else:
+        elif target != Path():
             print(f" '{target.name}' does not exist")
             target = Path()
             continue
@@ -152,18 +152,23 @@ def copy_path(target=Path(), destination=Path()):
         # there is no augmented path
         if destination == Path():
             where = input(f" Where do you want to copy '{target.name}' to? : ")
-            destination_no_name = Path(where).absolute()
+
+            if where[0] == "~":
+                destination_no_name = Path(where.replace("~", str(home_path)))
+            else:
+                destination_no_name = Path(where).absolute()
+
             destination = destination_no_name / target.name
 
-        if not where:
-            destination = Path()
-            continue
-
-        if where[0] == "~":
-            home_path = Path().home()
-            home_replacement = Path(where.replace("~", str(home_path)))
+        if str(destination)[0] == "~":
+            home_sign = str(destination).replace("~", str(home_path))
+            home_replacement = Path(home_sign)
             destination_no_name = home_replacement
             destination = destination_no_name / target.name
+
+        # if not Path(where).exists():
+        #     destination = Path()
+        #     continue
 
         if not destination.parent.exists():
             print(f" '{destination_no_name}' does not exist.")
