@@ -13,7 +13,7 @@ def create_path(path=Path(), type: str = ""):
         if str(path)[0] == "~":
             home_replacement = Path(str(path).replace("~", str(home_path)))
             path = home_replacement
-        type = input(" File or directory? (f/d) or r to return : ").lower()
+        type = input(" File or directory? (F/D) or R to return : ").lower()
 
         if type != "f" and type != "d" and type != "r":
             print(" Invalid input, f for file or d for directory")
@@ -39,10 +39,12 @@ def create_path(path=Path(), type: str = ""):
                     print(f" file '{path}' was created succesfully!")
 
             except FileNotFoundError:
-                print(f"\n path '{path}' hasn't been found.")
+                print(f" path '{path}' hasn't been found.")
+                return 0
 
             except PermissionError:
-                print(f"\n You don't have permission to create '{path}'")
+                print(f" You don't have permission to create '{path}'")
+                return 0
 
         elif type == "d":
             # if there was no augmented path, ask for input
@@ -61,10 +63,12 @@ def create_path(path=Path(), type: str = ""):
                     print(f" directory '{path}' was created succesfully!")
 
             except FileNotFoundError:
-                print(f"\n path '{path}' wasn't found.")
+                print(f" path '{path}' wasn't found.")
+                return 0
 
             except PermissionError:
-                print(f"\n You don't have permission to create '{path}'")
+                print(f" You don't have permission to create '{path}'")
+                return 0
 
         break
 
@@ -73,10 +77,10 @@ def remove_path(full_path=Path(), is_augmented=True):
     while True:
         name = ""
         if not is_augmented:
-            name = input(" Name of the file/directory? to remove or r to return : ")
+            name = input(" Name of the file/directory? to remove or R to return : ")
             full_path = Path(name).absolute()
 
-        if name == "r".lower():
+        if name.lower() == "r":
             return 0
 
         if str(full_path)[0] == "~":
@@ -111,10 +115,12 @@ def remove_path(full_path=Path(), is_augmented=True):
                     print(" Error can't delete that.")
 
             except FileNotFoundError:
-                print(f"\n path '{full_path}' wasn't found.")
+                print(f" path '{full_path}' wasn't found.")
+                return 0
 
             except PermissionError:
                 print(f" You don't have permission to remove '{full_path}' here")
+                return 0
 
         else:
             print(
@@ -166,10 +172,6 @@ def copy_path(target=Path(), destination=Path(), is_augmented=True):
             destination_no_name = home_replacement
             destination = destination_no_name / target.name
 
-        # if not Path(where).exists():
-        #     destination = Path()
-        #     continue
-
         if not destination.parent.exists():
             print(f" '{destination_no_name}' does not exist.")
             destination = Path()
@@ -194,7 +196,7 @@ def copy_path(target=Path(), destination=Path(), is_augmented=True):
                     continue
 
         if Path(destination).exists() and not target.is_file():
-            print(f"\n '{destination.name}' already exists in {destination_no_name}.")
+            print(f" '{destination.name}' already exists in {destination_no_name}.")
             return 0
 
         try:
@@ -203,18 +205,18 @@ def copy_path(target=Path(), destination=Path(), is_augmented=True):
 
             elif target.is_dir():
                 shutil.copytree(target, destination)
-            print(
-                f"'{target.name}' has been succesfully copied to {destination_no_name}! "
-            )
+            print(f"'{target.name}' was copied to {destination_no_name} succesfully!")
             break
 
         except FileNotFoundError:
-            print(f"\n path '{target}' wasn't found.")
+            print(f" path '{target}' wasn't found.")
+            return 0
 
         except NotADirectoryError:
-            pass
+            return 0
 
         except PermissionError:
             print(
                 f" You don't have permission to copy '{target.name}' into {destination}."
             )
+            return 0

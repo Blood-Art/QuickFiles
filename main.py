@@ -125,7 +125,7 @@ def menu():
                 list_content(Path(augmented_path), show_hidden=True)
 
             elif choice == f"3 {augmented_path}":
-                travel.change_dir(augmented_path)
+                travel.change_dir(augmented_path, is_augmented=True)
 
             elif choice == f"4 {augmented_path}":
                 edit.create_path(augmented_path)
@@ -146,7 +146,7 @@ def menu():
                 list_content()
 
             elif choice == "3":
-                travel.change_dir()
+                travel.change_dir(is_augmented=False)
 
             elif choice == "4":
                 edit.create_path()
@@ -156,6 +156,9 @@ def menu():
 
             elif choice == "6":
                 edit.copy_path(is_augmented=False)
+
+            elif choice == "7":
+                travel.move_path(is_augmented=False)
 
             elif choice == "9":
                 print(" have a good day! 🫡")
