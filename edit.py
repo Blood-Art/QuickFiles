@@ -8,11 +8,14 @@ import shutil
 home_path = Path().home()
 
 
-def create_path(path=Path(), type: str = ""):
+def create_path(path=Path(), type: str = "", is_augmented=True):
     while True:
-        if str(path)[0] == "~":
-            home_replacement = Path(str(path).replace("~", str(home_path)))
-            path = home_replacement
+        if str(path) == "~":
+            pass
+        else:
+            if str(path)[0] == "~":
+                home_replacement = Path(str(path).replace("~", str(home_path)))
+                path = home_replacement
         type = input(" File or directory? (F/D) or R to return : ").lower()
 
         if type != "f" and type != "d" and type != "r":
@@ -24,7 +27,7 @@ def create_path(path=Path(), type: str = ""):
 
         if type == "f":
             # if there was no augmented path, ask for input
-            if path == Path():
+            if not is_augmented:
                 path = input(" Name of the file? : ")
 
             try:
@@ -83,8 +86,13 @@ def remove_path(full_path=Path(), is_augmented=True):
         if name.lower() == "r":
             return 0
 
-        if str(full_path)[0] == "~":
-            full_path = Path(str(full_path).replace("~", str(home_path)))
+        # Pass if ~ exists in the current direco
+        if str(full_path) == "~":
+            pass
+
+        else:
+            if str(full_path)[0] == "~":
+                full_path = Path(str(full_path).replace("~", str(home_path)))
 
         if full_path.exists():
             break

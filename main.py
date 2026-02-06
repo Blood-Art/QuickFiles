@@ -128,7 +128,7 @@ def menu():
                 travel.change_dir(augmented_path, is_augmented=True)
 
             elif choice == f"4 {augmented_path}":
-                edit.create_path(augmented_path)
+                edit.create_path(augmented_path, is_augmented=True)
 
             elif choice == f"5 {augmented_path}":
                 edit.remove_path(augmented_path)
@@ -149,7 +149,7 @@ def menu():
                 travel.change_dir(is_augmented=False)
 
             elif choice == "4":
-                edit.create_path()
+                edit.create_path(is_augmented=False)
 
             elif choice == "5":
                 edit.remove_path(is_augmented=False)
