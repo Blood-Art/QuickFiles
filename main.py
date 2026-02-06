@@ -131,7 +131,7 @@ def menu():
                 edit.create_path(augmented_path, is_augmented=True)
 
             elif choice == f"5 {augmented_path}":
-                edit.remove_path(augmented_path)
+                edit.remove_path(augmented_path, is_augmented=True)
 
             elif choice == f"5 {augmented_path}":
                 edit.remove_path(augmented_path, is_augmented=True)
@@ -140,7 +140,9 @@ def menu():
                 edit.copy_path(augmented_path, augmented_destination, is_augmented=True)
 
             elif choice == f"7 {augmented_path} {augmented_destination}":
-                travel.move_path(augmented_path, augmented_destination)
+                travel.move_path(
+                    augmented_path, augmented_destination, is_augmented=True
+                )
 
             if choice == "1":
                 travel.go_home()

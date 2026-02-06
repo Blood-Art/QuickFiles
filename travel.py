@@ -44,14 +44,6 @@ def change_dir(path=Path(), is_augmented=True):
 def move_path(path=Path(), destination=Path(), is_augmented=True):
 
     where = ""
-    if not is_augmented:
-        path = input(" What do you want to move? or R to return : ")
-
-        if str(path).lower() == "r":
-            return 0
-
-        where = input(f" Where do you want to move {path}? : ")
-        destination = where
 
     if str(path)[0] == "~":
         home_sign = str(path).replace("~", str(home_dir))
@@ -60,6 +52,30 @@ def move_path(path=Path(), destination=Path(), is_augmented=True):
     if str(destination)[0] == "~":
         home_sign = str(destination).replace("~", str(home_dir))
         destination = Path(home_sign)
+
+    if not is_augmented:
+        while True:
+            path = input(" What do you want to move? or R to return : ")
+
+            if path.lower() == "r":
+                return 0
+
+            elif not Path(path).exists():
+                print(f" '{path}' does not exist")
+                continue
+            else:
+                break
+
+        while True:
+            where = input(f" Where do you want to move '{path}'? : ")
+
+            if not Path(where).exists():
+                print(f" '{where}' does not exist")
+                continue
+
+            else:
+                break
+        destination = where
 
     destination_no_name = str(destination).replace(str(Path(path).name), "")
 

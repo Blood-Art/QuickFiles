@@ -142,76 +142,54 @@ def remove_path(full_path=Path(), is_augmented=True):
 
 
 def copy_path(target=Path(), destination=Path(), is_augmented=True):
+
     while True:
-        name = ""
-        where = ""
-
         if not is_augmented:
-            name = input(" Name of the file/directory to copy? or r to return : ")
-            target = Path(name).absolute()
+            target = Path(input(" Which file to copy? or R to return : "))
 
-        if name.lower() == "r":
-            return 0
+            if str(target).lower() == "r":
+                return 0
 
-        if target.exists():
-            break
+        if str(target)[0] == "~":
+            target = str(target).replace("~", str(Path().home()))
 
-        elif target != Path():
-            print(f" '{target.name}' does not exist")
-            target = Path()
+        if not Path(target).exists():
+            print(f" '{target}' does not exist.")
             continue
 
+        else:
+            break
+
     while True:
-        home_replacement = ""
-        destination_no_name = ""
+        if not is_augmented:
+            destination = Path(
+                input(f" Where do you to copy '{target}' to? or R to return : ")
+            )
 
-        # there is no augmented path
-        if destination == Path():
-            where = input(f" Where do you want to copy '{target.name}' to? : ")
-
-            if where[0] == "~":
-                destination_no_name = Path(where.replace("~", str(home_path)))
-            else:
-                destination_no_name = Path(where).absolute()
-
-            destination = destination_no_name / target.name
+            if str(destination).lower() == "r":
+                return 0
 
         if str(destination)[0] == "~":
-            home_sign = str(destination).replace("~", str(home_path))
-            home_replacement = Path(home_sign)
-            destination_no_name = home_replacement
-            destination = destination_no_name / target.name
+            destination = str(destination).replace("~", str(Path().home()))
 
-        if not destination.parent.exists():
-            print(f" '{destination_no_name}' does not exist.")
-            destination = Path()
+        if not Path(destination).exists():
+            print(f" '{destination}' does not exist")
             continue
 
-        if destination.is_file():
-            utils.confirmation(destination)
-
-        if Path(destination).exists() and not target.is_file():
-            print(f" '{destination.name}' already exists in {destination_no_name}.")
-            return 0
-
-        try:
-            if target.is_file():
-                shutil.copy2(target, destination)
-
-            elif target.is_dir():
-                shutil.copytree(target, destination)
-            print(f"'{target.name}' was copied to {destination_no_name} succesfully!")
+        else:
             break
 
-        except FileNotFoundError:
-            print(f" path '{target}' wasn't found.")
-            return 0
+    try:
+        target = Path(target)
+        destination = Path(destination)
+        final_destination = f"{destination}/{target.name}"
+        if Path(target).is_file():
+            shutil.copy2(target, final_destination)
 
-        except NotADirectoryError:
-            return 0
+        elif Path(target).is_dir():
+            shutil.copytree(target, final_destination)
 
-        except PermissionError:
-            print(
-                f" You don't have permission to copy '{target.name}' into {destination}."
-            )
-            return 0
+        print(f"'{target.name}' has been succesfully copied to {destination}!")
+
+    except Exception as e:
+        print(f" Couldn't Proceed {e}.")
