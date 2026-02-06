@@ -1,6 +1,7 @@
 import os
 
 from pathlib import Path
+import utils
 
 home_dir = Path().home()
 
@@ -40,7 +41,7 @@ def change_dir(path=Path(), is_augmented=True):
         print(f"'{path}' is not a directory.")
 
 
-def move_path(destination=Path(), path=Path(), is_augmented=True):
+def move_path(path=Path(), destination=Path(), is_augmented=True):
 
     where = ""
     if not is_augmented:
@@ -50,20 +51,39 @@ def move_path(destination=Path(), path=Path(), is_augmented=True):
             return 0
 
         where = input(f" Where do you want to move {path}? : ")
+        destination = where
 
     if str(path)[0] == "~":
         home_sign = str(path).replace("~", str(home_dir))
         path = Path(home_sign)
-        destination = f"{Path(where)}/{path.name}"
 
     if str(destination)[0] == "~":
         home_sign = str(destination).replace("~", str(home_dir))
         destination = Path(home_sign)
 
-    destination_no_name = str(destination).rstrip(Path(path).name)
+    destination_no_name = str(destination).replace(str(Path(path).name), "")
+
     try:
+        destination = f"{destination}/{Path(path).name}"
+
+        if Path(destination).exists():
+            if Path(destination).is_file():
+                utils.confirmation(destination)
+
+            elif Path(destination).is_dir():
+                print(
+                    f" {Path(destination).name} already exists in {destination_no_name}."
+                )
+                return 0
+
         Path(path).move(destination)
         print(f" {Path(path).name} was moved to {destination_no_name} succesfully!")
+
+    except FileNotFoundError:
+        print(f" Path '{path}' not found.")
+
+    except PermissionError:
+        print(" You don't have permissions to move this path.")
 
     except Exception as e:
         print(f" Couldn't Proceed {e}.")

@@ -139,6 +139,9 @@ def menu():
             elif choice == f"6 {augmented_path} {augmented_destination}":
                 edit.copy_path(augmented_path, augmented_destination, is_augmented=True)
 
+            elif choice == f"7 {augmented_path} {augmented_destination}":
+                travel.move_path(augmented_path, augmented_destination)
+
             if choice == "1":
                 travel.go_home()
 

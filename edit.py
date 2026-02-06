@@ -4,6 +4,8 @@ import os
 
 import shutil
 
+import utils
+
 
 home_path = Path().home()
 
@@ -186,22 +188,7 @@ def copy_path(target=Path(), destination=Path(), is_augmented=True):
             continue
 
         if destination.is_file():
-            while True:
-                confirmation = input(
-                    f"\n WARNING '{destination.name}' is a file, if you choose to continue {destination.name} will be overwritten are you sure? (y/n) : "
-                )
-
-                if confirmation.lower() == "y" or confirmation == "":
-                    break
-
-                elif confirmation.lower() == "n":
-                    return 0
-
-                else:
-                    print(
-                        f"\n '{confirmation}' is invalid, please enter y or enter for yes or n for no."
-                    )
-                    continue
+            utils.confirmation(destination)
 
         if Path(destination).exists() and not target.is_file():
             print(f" '{destination.name}' already exists in {destination_no_name}.")
