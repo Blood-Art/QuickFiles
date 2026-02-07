@@ -77,8 +77,6 @@ def move_path(path=Path(), destination=Path(), is_augmented=True):
             return 0
 
         if not destination.exists():
-            # print(f" '{destination}' does not exist")
-            # continue
             path.move(destination)
             break
 

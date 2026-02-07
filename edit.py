@@ -238,5 +238,4 @@ def edit_file(target=Path(), text_editor="", is_augmented=True):
     subprocess.run(
         run_editor,
         shell=True,
-        timeout=3,
     )
