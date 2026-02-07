@@ -1,5 +1,9 @@
 from pathlib import Path
 
+from subprocess import run
+
+from os import name
+
 
 def confirmation(destination):
     while True:
@@ -19,3 +23,7 @@ def confirmation(destination):
                 f"\n '{confirmation}' is invalid, please enter y or enter for yes or n for no."
             )
             continue
+
+
+def clear():
+    run("cls" if name == "nt" else "clear", shell=True)

@@ -14,12 +14,6 @@ home_path = Path().home()
 
 def create_path(path=Path(), type: str = "", is_augmented=True):
     while True:
-        if str(path) == "~":
-            pass
-        else:
-            if str(path)[0] == "~":
-                home_replacement = Path(str(path).replace("~", str(home_path)))
-                path = home_replacement
         type = input(" File or directory? (F/D) or R to return : ").lower()
 
         if type != "f" and type != "d" and type != "r":
@@ -27,36 +21,37 @@ def create_path(path=Path(), type: str = "", is_augmented=True):
             continue
 
         if type == "r":
+            utils.clear()
             return 0
 
         if type == "f":
             # if there was no augmented path, ask for input
             if not is_augmented:
-                path = input(" Name of the file? : ")
+                path = input(" Name of the file? : ").replace("~", str(home_path))
 
             try:
                 if Path(path).exists() and Path(path).is_file():
-                    print(f" file '{path}' already exists")
+                    print(f" File '{path}' already exists.")
 
                 elif Path(path).exists() and Path(path).is_dir():
-                    print(f" directory '{path}' already exists")
+                    print(f" Directory '{path}' already exists.")
 
                 else:
                     Path(path).touch()
-                    print(f" file '{path}' was created succesfully!")
+                    print(f" File '{path}' was created succesfully!")
 
             except FileNotFoundError:
-                print(f" path '{path}' hasn't been found.")
+                print(f" Path '{path}' hasn't been found.")
                 return 0
 
             except PermissionError:
-                print(f" You don't have permission to create '{path}'")
+                print(f" You don't have permission to create '{path}'.")
                 return 0
 
         elif type == "d":
             # if there was no augmented path, ask for input
             if path == Path():
-                path = input(" Name of the directory? : ")
+                path = input(" Name of the directory? : ").replace("~", str(home_path))
 
             try:
                 if Path(path).exists() and Path(path).is_file():
@@ -84,26 +79,21 @@ def remove_path(full_path=Path(), is_augmented=True):
     while True:
         name = ""
         if not is_augmented:
-            name = input(" Name of the file/directory? to remove or R to return : ")
+            name = input(
+                " Name of the file/directory? to remove or R to return : "
+            ).replace("~", str(home_path))
             full_path = Path(name).absolute()
 
         if name.lower() == "r":
+            utils.clear()
             return 0
-
-        # Pass if ~ exists in the current direco
-        if str(full_path) == "~":
-            pass
-
-        else:
-            if str(full_path)[0] == "~":
-                full_path = Path(str(full_path).replace("~", str(home_path)))
 
         if full_path.exists():
             break
 
         else:
-            print(f" path '{full_path}' does not exist")
-            return 0
+            print(f" Path '{full_path}' does not exist")
+            continue
 
     while True:
         confirmation = input(
@@ -147,13 +137,15 @@ def copy_path(target=Path(), destination=Path(), is_augmented=True):
 
     while True:
         if not is_augmented:
-            target = Path(input(" Which file to copy? or R to return : "))
+            target = Path(
+                input(" Which file to copy? or R to return : ").replace(
+                    "~", str(home_path)
+                )
+            )
 
             if str(target).lower() == "r":
+                utils.clear()
                 return 0
-
-        if str(target)[0] == "~":
-            target = str(target).replace("~", str(Path().home()))
 
         if not Path(target).exists():
             print(f" '{target}' does not exist.")
@@ -165,14 +157,14 @@ def copy_path(target=Path(), destination=Path(), is_augmented=True):
     while True:
         if not is_augmented:
             destination = Path(
-                input(f" Where do you to copy '{target}' to? or R to return : ")
+                input(
+                    f" Where do you to copy '{target}' to? or R to return : "
+                ).replace("~", str(home_path))
             )
 
             if str(destination).lower() == "r":
+                utils.clear()
                 return 0
-
-        if str(destination)[0] == "~":
-            destination = str(destination).replace("~", str(home_path))
 
         if not Path(destination).exists():
             print(f" '{destination}' does not exist")
@@ -203,12 +195,14 @@ def edit_file(target=Path(), text_editor="", is_augmented=True):
 
     config_path = Path().home() / config_file
 
+    supported_editors = ("nano", "vim", "nvim")
+
     if not config_path.exists():
         while True:
             text_editor = input(" What is your favourite text editor? : ").lower()
 
-            if text_editor != "nvim" and text_editor != "nano" and text_editor != "vim":
-                print(" Sorry only nvim, vim and nano are supported.")
+            if text_editor not in supported_editors:
+                print(f" Sorry only {supported_editors} are supported.")
                 continue
 
             else:
@@ -223,19 +217,26 @@ def edit_file(target=Path(), text_editor="", is_augmented=True):
 
     while True:
         if not is_augmented:
-            target = Path(input(" Which file do you want to edit? or R to return : "))
+            target = Path(
+                input(" Which file do you want to edit? or R to return : ").replace(
+                    "~", str(home_path)
+                )
+            )
 
             if str(target).lower() == "r":
+                utils.clear()
                 return 0
-
-        if str(target)[0] == "~":
-            target = Path(str(target).replace("~", str(home_path)))
 
         if not Path(target).exists() or target == "":
             print(f" '{target}' does not exist")
+            is_augmented = False
             continue
 
         else:
             break
     run_editor = f"{text_editor} {Path(target)}"
-    subprocess.run(run_editor, shell=True)
+    subprocess.run(
+        run_editor,
+        shell=True,
+        timeout=3,
+    )

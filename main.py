@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import subprocess
+import utils
 
 import os
 
@@ -9,12 +9,10 @@ import travel
 import edit
 
 
-def list_content(path=Path(), show_hidden=False):
-    home_path = Path().home()
+home_path = Path().home()
 
-    if str(path)[0] == "~":
-        new_home_path = Path(str(path).replace("~", str(home_path)))
-        path = new_home_path
+
+def list_content(path=Path(), show_hidden=False):
 
     try:
         directory_content = path.iterdir()
@@ -44,7 +42,7 @@ def list_content(path=Path(), show_hidden=False):
                 row_count += 1
                 print(f" ({sorted_path})", end=" ")
 
-                # starting a new line except if it's the list one in the list.
+                # starting a new line except if it's the last path in the list.
                 if row_count >= row_size and sorted_path != directory_sorted[-1]:
                     print()
                     print(" " * spacing, end="")
@@ -69,7 +67,7 @@ def list_content(path=Path(), show_hidden=False):
 def filter_input(
     choice: str, filtered_choice="", filtered_path="", filtered_destination=""
 ):
-    inputs = choice.split(" ")
+    inputs = choice.replace("~", str(home_path)).split(" ")
 
     if len(inputs) >= 1:
         filtered_choice = inputs[0]
@@ -80,7 +78,10 @@ def filter_input(
     if len(inputs) >= 3:
         filtered_destination = inputs[2]
 
-    return filtered_choice, filtered_path, filtered_destination
+    if filtered_choice == str(home_path):
+        filtered_choice = "~"
+
+    return filtered_choice, Path(filtered_path), Path(filtered_destination)
 
 
 def menu():
@@ -109,20 +110,18 @@ def menu():
         # Allow for dynamic options by combining the option with the path in the same line
         # Filter (Remove) all the numbers and spaces from the users choice
 
-        filtered_choice, filtered_path, filtered_destination = filter_input(choice)
-
-        augmented_path = Path(filtered_path)
-
-        augmented_destination = Path(filtered_destination)
+        filtered_choice, augmented_path, augmented_destination = filter_input(choice)
 
         if filtered_choice not in options.keys():
             print(f"'{filtered_choice}' is not a valid option.")
             continue
 
-        subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
+        utils.clear()
+
         try:
+            choice = choice.replace("~", str(home_path))
             if choice == f"2 {augmented_path}":
-                list_content(Path(augmented_path), show_hidden=True)
+                list_content(augmented_path, show_hidden=True)
 
             elif choice == f"3 {augmented_path}":
                 travel.change_dir(augmented_path, is_augmented=True)
