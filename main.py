@@ -119,7 +119,7 @@ def menu():
             print(f"'{filtered_choice}' is not a valid option.")
             continue
 
-        # subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
+        subprocess.run("cls" if os.name == "nt" else "clear", shell=True)
         try:
             if choice == f"2 {augmented_path}":
                 list_content(Path(augmented_path), show_hidden=True)
@@ -144,6 +144,9 @@ def menu():
                     augmented_path, augmented_destination, is_augmented=True
                 )
 
+            elif choice == f"8 {augmented_path}":
+                edit.edit_file(augmented_path, is_augmented=True)
+
             if choice == "1":
                 travel.go_home()
 
@@ -164,6 +167,9 @@ def menu():
 
             elif choice == "7":
                 travel.move_path(is_augmented=False)
+
+            elif choice == "8":
+                edit.edit_file(is_augmented=False)
 
             elif choice == "9":
                 print(" have a good day! 🫡")

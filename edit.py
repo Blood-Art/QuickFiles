@@ -4,6 +4,8 @@ import os
 
 import shutil
 
+import subprocess
+
 import utils
 
 
@@ -170,7 +172,7 @@ def copy_path(target=Path(), destination=Path(), is_augmented=True):
                 return 0
 
         if str(destination)[0] == "~":
-            destination = str(destination).replace("~", str(Path().home()))
+            destination = str(destination).replace("~", str(home_path))
 
         if not Path(destination).exists():
             print(f" '{destination}' does not exist")
@@ -193,3 +195,47 @@ def copy_path(target=Path(), destination=Path(), is_augmented=True):
 
     except Exception as e:
         print(f" Couldn't Proceed {e}.")
+
+
+def edit_file(target=Path(), text_editor="", is_augmented=True):
+
+    config_file = ".file_manager.conf"
+
+    config_path = Path().home() / config_file
+
+    if not config_path.exists():
+        while True:
+            text_editor = input(" What is your favourite text editor? : ").lower()
+
+            if text_editor != "nvim" and text_editor != "nano" and text_editor != "vim":
+                print(" Sorry only nvim, vim and nano are supported.")
+                continue
+
+            else:
+                break
+
+        with open(config_path, "w") as file:
+            file.write(text_editor)
+
+    else:
+        with open(config_path, "r") as file:
+            text_editor = file.read()
+
+    while True:
+        if not is_augmented:
+            target = Path(input(" Which file do you want to edit? or R to return : "))
+
+            if str(target).lower() == "r":
+                return 0
+
+        if str(target)[0] == "~":
+            target = Path(str(target).replace("~", str(home_path)))
+
+        if not Path(target).exists() or target == "":
+            print(f" '{target}' does not exist")
+            continue
+
+        else:
+            break
+    run_editor = f"{text_editor} {Path(target)}"
+    subprocess.run(run_editor, shell=True)
