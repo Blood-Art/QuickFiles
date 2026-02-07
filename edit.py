@@ -14,6 +14,9 @@ home_path = Path().home()
 
 def create_path(path=Path(), type: str = "", is_augmented=True):
     while True:
+        if path == home_path:
+            path = str(path).replace(str(home_path), "~")
+
         type = input(" File or directory? (F/D) or R to return : ").lower()
 
         if type != "f" and type != "d" and type != "r":
@@ -77,6 +80,8 @@ def create_path(path=Path(), type: str = "", is_augmented=True):
 
 def remove_path(full_path=Path(), is_augmented=True):
     while True:
+        if Path("~").exists():
+            full_path = Path(str(full_path).replace(str(home_path), "~"))
         name = ""
         if not is_augmented:
             name = input(
