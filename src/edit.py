@@ -147,60 +147,26 @@ def remove_path(full_path=Path(), is_augmented=True):
         break
 
 
-def copy_path(target=Path(), destination=Path(), is_augmented=True):
+def copy_path(*targets, destination=Path(), is_augmented=True):
 
-    while True:
-        if not is_augmented:
-            target = Path(
-                input(" Which file to copy? or R to return : ").replace(
-                    "~", str(home_path)
-                )
-            )
+    targets = list(targets)
+    destination = targets[-1]
+    destination_path = Path(destination)
 
-            if str(target).lower() == "r":
-                utils.clear()
-                return 0
-
+    for target in targets[0:-2]:
         if not Path(target).exists():
             print(f" '{target}' does not exist.")
-            continue
 
-        else:
-            break
-
-    while True:
-        if not is_augmented:
-            destination = Path(
-                input(
-                    f" Where do you to copy '{target}' to? or R to return : "
-                ).replace("~", str(home_path))
-            )
-
-            if str(destination).lower() == "r":
-                utils.clear()
-                return 0
-
-        if not Path(destination).exists():
-            print(f" '{destination}' does not exist")
-            continue
-
-        else:
-            break
-
-    try:
-        target = Path(target)
-        destination = Path(destination)
-        final_destination = f"{destination}/{target.name}"
-        if Path(target).is_file():
-            shutil.copy2(target, final_destination)
-
-        elif Path(target).is_dir():
-            shutil.copytree(target, final_destination)
-
-        print(f"'{target.name}' has been succesfully copied to {destination}!")
-
-    except Exception as e:
-        print(f" Couldn't Proceed {e}.")
+        elif target != "":
+            final_destination = destination_path / f"{target}"
+            try:
+                if Path(final_destination).exists():
+                    utils.confirmation(str(final_destination))
+                if Path(target).is_file():
+                    shutil.copy2(target, final_destination)
+                    print(f" File '{target}' was copied to {destination} succesfully!")
+            except Exception as e:
+                print(f" Couldn't Proceed {e}")
 
 
 def edit_file(target=Path(), text_editor="", is_augmented=True):

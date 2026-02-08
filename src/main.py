@@ -106,7 +106,7 @@ def menu():
     }
     is_on = True
 
-    # utils.clear()
+    utils.clear()
     print(f" {'*' * 20} WELCOME {'*' * 20}")
     while is_on:
         currentpath = Path().absolute()
@@ -124,15 +124,12 @@ def menu():
         )
 
         paths_string = " ".join(augmented_path_list)
-        # if augmented_path:
-        #     if not augmented_path.exists():
-        #         print(f" '{augmented_path}' does not exist")
 
         if filtered_choice not in options.keys():
             print(f"'{filtered_choice}' is not a valid option.")
             continue
 
-        # utils.clear()
+        utils.clear()
 
         try:
             choice = choice.replace("~", str(home_path))
@@ -169,8 +166,11 @@ def menu():
                 edit.copy_path(is_augmented=False)
 
             elif choice == f"6 {paths_string}":
-                for p in augmented_path_list:
-                    edit.copy_path(Path(p), augmented_destination, is_augmented=True)
+                edit.copy_path(
+                    *augmented_path_list,
+                    augmented_destination,
+                    is_augmented=True,
+                )
 
             elif choice == "7":
                 travel.move_path(is_augmented=False)
