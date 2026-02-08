@@ -12,70 +12,79 @@ import utils
 home_path = Path().home()
 
 
-def create_path(path=Path(), type: str = "", is_augmented=True):
-    while True:
-        if path == home_path:
-            path = str(path).replace(str(home_path), "~")
+def create_path(*path_list, type: str = "", is_augmented=True):
 
-        type = input(" File or directory? (F/D) or R to return : ").lower()
+    if not is_augmented:
+        path_name = input(" Name of the file/directory? : ").replace(
+            "~", str(home_path)
+        )
+        paths = path_name.split()
 
-        if type != "f" and type != "d" and type != "r":
-            print(" Invalid input, f for file or d for directory")
-            continue
+        for p in paths:
+            if p != " ":
+                path_list = list(path_list)
+                path_list.append(p)
 
-        if type == "r":
-            utils.clear()
-            return 0
+    for path in path_list:
+        while True:
+            if path == home_path:
+                path = str(path).replace(str(home_path), "~")
 
-        if type == "f":
-            # if there was no augmented path, ask for input
-            if not is_augmented:
-                path = input(" Name of the file? : ").replace("~", str(home_path))
+            type = input(
+                f" File or directory? (F/D) for '{path}' or R to return : "
+            ).lower()
 
-            try:
-                if Path(path).exists() and Path(path).is_file():
-                    print(f" File '{path}' already exists.")
+            if type != "f" and type != "d" and type != "r":
+                print(" Invalid input, f for file or d for directory")
+                continue
 
-                elif Path(path).exists() and Path(path).is_dir():
-                    print(f" Directory '{path}' already exists.")
-
-                else:
-                    Path(path).touch()
-                    print(f" File '{path}' was created succesfully!")
-
-            except FileNotFoundError:
-                print(f" Path '{path}' hasn't been found.")
+            if type == "r":
+                utils.clear()
                 return 0
 
-            except PermissionError:
-                print(f" You don't have permission to create '{path}'.")
-                return 0
+            if type == "f":
+                # if there was no augmented path, ask for input
 
-        elif type == "d":
-            # if there was no augmented path, ask for input
-            if path == Path():
-                path = input(" Name of the directory? : ").replace("~", str(home_path))
+                try:
+                    if Path(path).exists() and Path(path).is_file():
+                        print(f" File '{path}' already exists.")
 
-            try:
-                if Path(path).exists() and Path(path).is_file():
-                    print(f" file '{path}' already exists")
+                    elif Path(path).exists() and Path(path).is_dir():
+                        print(f" Directory '{path}' already exists.")
 
-                elif Path(path).exists() and Path(path).is_dir():
-                    print(f" directory '{path}' already exists")
+                    else:
+                        Path(path).touch()
+                        print(f" File '{path}' was created succesfully!")
 
-                else:
-                    Path(path).mkdir()
-                    print(f" directory '{path}' was created succesfully!")
+                except FileNotFoundError:
+                    print(f" Path '{path}' hasn't been found.")
+                    return 0
 
-            except FileNotFoundError:
-                print(f" path '{path}' wasn't found.")
-                return 0
+                except PermissionError:
+                    print(f" You don't have permission to create '{path}'.")
+                    return 0
 
-            except PermissionError:
-                print(f" You don't have permission to create '{path}'")
-                return 0
+            elif type == "d":
+                try:
+                    if Path(path).exists() and Path(path).is_file():
+                        print(f" file '{path}' already exists")
 
-        break
+                    elif Path(path).exists() and Path(path).is_dir():
+                        print(f" directory '{path}' already exists")
+
+                    else:
+                        Path(path).mkdir()
+                        print(f" directory '{path}' was created succesfully!")
+
+                except FileNotFoundError:
+                    print(f" path '{path}' wasn't found.")
+                    return 0
+
+                except PermissionError:
+                    print(f" You don't have permission to create '{path}'")
+                    return 0
+
+            break
 
 
 def remove_path(full_path=Path(), is_augmented=True):

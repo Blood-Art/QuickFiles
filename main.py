@@ -12,60 +12,68 @@ import edit
 home_path = Path().home()
 
 
-def list_content(path=Path(), show_hidden=False):
+def list_content(*path_list, show_hidden=False, is_augmented=True):
 
-    try:
-        directory_content = path.iterdir()
-        directory_list = []
+    if not is_augmented:
+        path_list = (Path(),)
 
-        if not os.listdir(path):
-            print(" There is nothing here.")
-            return 0
+    print()
+    for p in path_list:
+        if str(p) != ".":
+            print(f"\n {p}")
+        try:
+            p = Path(p)
+            directory_content = p.iterdir()
+            directory_list = []
 
-        else:
-            row_count = 0
-            row_size = 4
-            num_of_dashes = 90
-            spacing = 20
-            for path in directory_content:
-                if not show_hidden:
-                    if path.name[0] != ".":
+            if not os.listdir(p):
+                print(" There is nothing here.")
+                return 0
+
+            else:
+                row_count = 0
+                row_size = 4
+                num_of_dashes = 90
+                spacing = 20
+                for path in directory_content:
+                    if not show_hidden:
+                        if path.name[0] != ".":
+                            directory_list.append(path.name)
+
+                    else:
                         directory_list.append(path.name)
 
-                else:
-                    directory_list.append(path.name)
+                directory_sorted = sorted(directory_list, key=str.lower)
+                print(f" {'-' * num_of_dashes}")
+                print(" " * spacing, end="")
+                for sorted_path in directory_sorted:
+                    row_count += 1
+                    print(f" ({sorted_path})", end=" ")
 
-            directory_sorted = sorted(directory_list, key=str.lower)
-            print(f" {'-' * num_of_dashes}")
-            print(" " * spacing, end="")
-            for sorted_path in directory_sorted:
-                row_count += 1
-                print(f" ({sorted_path})", end=" ")
+                    # starting a new line except if it's the last path in the list.
+                    if row_count >= row_size and sorted_path != directory_sorted[-1]:
+                        print()
+                        print(" " * spacing, end="")
+                        row_count = 0
+                print(" " * spacing, end="")
 
-                # starting a new line except if it's the last path in the list.
-                if row_count >= row_size and sorted_path != directory_sorted[-1]:
-                    print()
-                    print(" " * spacing, end="")
-                    row_count = 0
-            print(" " * spacing, end="")
+            print(f"\n {'-' * 90}")
 
-        print(f"\n {'-' * 90}")
+        except NotADirectoryError:
+            print(f"'{p}' is not a directory.")
 
-    except NotADirectoryError:
-        print(f"'{path}' is not a directory.")
+        except FileNotFoundError:
+            print(f" Path '{p}' was not found.")
 
-    except FileNotFoundError:
-        print(f" Path '{path}' was not found.")
+        except PermissionError:
+            print(f" You don't have permission to list '{p}'.")
 
-    except PermissionError:
-        print(f" You don't have permission to list '{path}'.")
-
-    except Exception as e:
-        print(f" Couldn't proceed {e}")
+        except Exception as e:
+            print(f" Couldn't proceed {e}")
 
 
 def filter_input(
-    choice: str, filtered_choice="", filtered_path="", filtered_destination=""
+    choice: str, filtered_choice="", filtered_path_list="", filtered_destination=""
 ):
     inputs = choice.replace("~", str(home_path)).split(" ")
 
@@ -73,15 +81,15 @@ def filter_input(
         filtered_choice = inputs[0]
 
     if len(inputs) >= 2:
-        filtered_path = inputs[1]
+        filtered_path_list = inputs[1 : len(inputs)]
 
     if len(inputs) >= 3:
-        filtered_destination = inputs[2]
+        filtered_destination = inputs[-1]
 
     if filtered_choice == str(home_path):
         filtered_choice = "~"
 
-    return filtered_choice, Path(filtered_path), Path(filtered_destination)
+    return filtered_choice, filtered_path_list, Path(filtered_destination)
 
 
 def menu():
@@ -98,6 +106,7 @@ def menu():
     }
     is_on = True
 
+    # utils.clear()
     print(f" {'*' * 20} WELCOME {'*' * 20}")
     while is_on:
         currentpath = Path().absolute()
@@ -110,17 +119,20 @@ def menu():
         # Allow for dynamic options by combining the option with the path in the same line
         # Filter (Remove) all the numbers and spaces from the users choice
 
-        filtered_choice, augmented_path, augmented_destination = filter_input(choice)
+        filtered_choice, augmented_path_list, augmented_destination = filter_input(
+            choice
+        )
 
-        if augmented_path:
-            if not augmented_path.exists():
-                print(f" '{augmented_path}' does not exist")
+        paths_string = " ".join(augmented_path_list)
+        # if augmented_path:
+        #     if not augmented_path.exists():
+        #         print(f" '{augmented_path}' does not exist")
 
         if filtered_choice not in options.keys():
             print(f"'{filtered_choice}' is not a valid option.")
             continue
 
-        utils.clear()
+        # utils.clear()
 
         try:
             choice = choice.replace("~", str(home_path))
@@ -128,11 +140,27 @@ def menu():
             if choice == "1":
                 travel.go_home()
 
-            elif choice == f"2 {augmented_path}":
-                list_content(augmented_path, show_hidden=True)
+            elif choice == f"2 {paths_string}":
+                list_content(*augmented_path_list, show_hidden=True, is_augmented=True)
 
             elif choice == "2":
-                list_content()
+                list_content(is_augmented=False)
+
+            elif choice == f"3 {paths_string}":
+                travel.change_dir(Path(augmented_path_list[0]), is_augmented=True)
+
+            elif choice == "3":
+                travel.change_dir(is_augmented=False)
+
+            elif choice == f"4 {paths_string}":
+                edit.create_path(*augmented_path_list, is_augmented=True)
+
+            elif choice == "4":
+                edit.create_path(is_augmented=False)
+
+            elif choice == f"5 {paths_string}":
+                for p in augmented_path_list:
+                    edit.remove_path(Path(p), is_augmented=True)
 
             elif choice == "5":
                 edit.remove_path(is_augmented=False)
@@ -140,46 +168,29 @@ def menu():
             elif choice == "6":
                 edit.copy_path(is_augmented=False)
 
-            elif choice == f"6 {augmented_path} {augmented_destination}":
-                edit.copy_path(augmented_path, augmented_destination, is_augmented=True)
+            elif choice == f"6 {paths_string}":
+                for p in augmented_path_list:
+                    edit.copy_path(Path(p), augmented_destination, is_augmented=True)
 
             elif choice == "7":
                 travel.move_path(is_augmented=False)
 
-            elif choice == f"7 {augmented_path} {augmented_destination}":
+            elif choice == f"7 {augmented_path_list} {augmented_destination}":
                 travel.move_path(
-                    augmented_path, augmented_destination, is_augmented=True
+                    augmented_path_list, augmented_destination, is_augmented=True
                 )
             elif choice == "8":
                 edit.edit_file(is_augmented=False)
 
-            elif choice == f"8 {augmented_path}":
-                edit.edit_file(augmented_path, is_augmented=True)
+            elif choice == f"8 {augmented_path_list}":
+                edit.edit_file(augmented_path_list, is_augmented=True)
 
             elif choice == "9":
                 print(" have a good day! 🫡")
                 is_on = False
 
-            elif choice == f"3 {augmented_path}":
-                travel.change_dir(augmented_path, is_augmented=True)
-
-            elif choice == "3":
-                travel.change_dir(is_augmented=False)
-
-            elif choice == f"4 {augmented_path}":
-                edit.create_path(augmented_path, is_augmented=True)
-
-            elif choice == "4":
-                edit.create_path(is_augmented=False)
-
-            elif choice == f"5 {augmented_path}":
-                edit.remove_path(augmented_path, is_augmented=True)
-
-            elif choice == f"5 {augmented_path}":
-                edit.remove_path(augmented_path, is_augmented=True)
-
             else:
-                if str(augmented_path) == str(home_path):
+                if str(augmented_path_list) == str(home_path):
                     choice = choice.replace(str(home_path), "~")
                 print(f" {choice} is not valid")
 
