@@ -149,22 +149,59 @@ def remove_path(full_path=Path(), is_augmented=True):
 
 def copy_path(*targets, destination=Path(), is_augmented=True):
 
-    targets = list(targets)
-    destination = targets[-1]
-    destination_path = Path(destination)
+    target_input = ""
+    if not is_augmented:
+        while True:
+            target_input = input(" What do you want to copy? or R to return : ")
 
-    for target in targets[0:-2]:
+            if target_input.lower() == "r":
+                return 0
+
+            targets = target_input.split(" ")
+
+            break
+
+        while True:
+            destination = input(
+                f" Where do you want to copy {targets}? or R to return : "
+            ).replace("~", str(home_path))
+
+            if target_input.lower() == "r":
+                return 0
+
+            break
+
+    if is_augmented:
+        destination = targets[-1]
+        targets = list(targets[0:-2])
+
+        print(targets, destination)
+
+    if not Path(destination).exists():
+        print(f" '{destination}' does not exist.")
+        return 0
+
+    for target in targets:
         if not Path(target).exists():
             print(f" '{target}' does not exist.")
 
         elif target != "":
-            final_destination = destination_path / f"{target}"
+            final_destination = Path(destination) / f"{target}"
             try:
-                if Path(final_destination).exists():
+                if (
+                    Path(final_destination).exists()
+                    and Path(final_destination).is_file()
+                ):
                     utils.confirmation(str(final_destination))
                 if Path(target).is_file():
                     shutil.copy2(target, final_destination)
                     print(f" File '{target}' was copied to {destination} succesfully!")
+
+                elif Path(target).is_dir():
+                    shutil.copytree(target, final_destination)
+                    print(
+                        f" Directory '{target}' was copied to {destination} succesfully!"
+                    )
             except Exception as e:
                 print(f" Couldn't Proceed {e}")
 
