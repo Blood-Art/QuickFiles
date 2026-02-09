@@ -43,44 +43,64 @@ def change_dir(path=Path(), is_augmented=True):
         print(f"'{path}' is not a directory.")
 
 
-def move_path(path=Path(), destination=Path(), is_augmented=True):
+def move_path(*paths, destination=Path(), is_augmented=True):
 
-    while True:
-        if not is_augmented:
-            path = Path(
-                input(" What do you want to move? or R to return: ").replace(
-                    "~", str(home_path)
-                )
+    if not is_augmented:
+        while True:
+            path = input(" What do you want to move? or R to return: ").replace(
+                "~", str(home_path)
             )
 
-            if str(path).lower() == "r":
+            if path.lower() == "r":
                 utils.clear()
                 return 0
 
-        if not path.exists():
-            print(f" '{path}' does not exist")
-            continue
+            paths_to_move = path.split(" ")
 
-        else:
+            paths = paths_to_move
+
             break
 
-    while True:
-        if not is_augmented:
-            destination = Path(
-                input(f" Where do you want to move '{path}'? or R to return: ").replace(
-                    "~", str(home_path)
-                )
-            )
+        while True:
+            destination = input(
+                f" Where do you want to move '{path}'? or R to return: "
+            ).replace("~", str(home_path))
 
-        if str(destination).lower() == "r":
-            utils.clear()
-            return 0
+            if destination.lower() == "r":
+                utils.clear()
+                return 0
 
-        if not destination.exists():
-            path.move(destination)
             break
 
-        else:
-            final_destination = destination / path.name
-            path.move(final_destination)
-            break
+    if is_augmented:
+        destination = paths[-1]
+        paths = paths[0:-2]
+
+    path_list = []
+    for p in paths:
+        try:
+            path_list.append(p)
+            p = Path(p)
+            destination = Path(destination)
+            if not p.exists():
+                print(f" '{p}' does not exist.")
+
+            final_destination = destination / p.name
+
+            if not p.exists():
+                print(f" '{p}' does not exist.")
+
+            if not destination.exists():
+                p.move(destination)
+                print(f" {p.name} has been renamed to '{destination}' succesfully!")
+
+            else:
+                p.move(final_destination)
+
+        except NotADirectoryError:
+            print(f" '{destination}' is not a directory, you can't move '{p}' to it.")
+
+        except Exception as e:
+            print(f" Couldn't proceed {e}")
+
+    print(f" '{', '.join(path_list)}' has been moved to {destination} succesfully!")

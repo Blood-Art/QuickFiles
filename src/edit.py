@@ -39,7 +39,6 @@ def create_path(*path_list, type: str = "", is_augmented=True):
                 continue
 
             if type == "r":
-                utils.clear()
                 return 0
 
             if type == "f":
@@ -87,64 +86,63 @@ def create_path(*path_list, type: str = "", is_augmented=True):
             break
 
 
-def remove_path(full_path=Path(), is_augmented=True):
-    while True:
-        if Path("~").exists():
-            full_path = Path(str(full_path).replace(str(home_path), "~"))
-        name = ""
-        if not is_augmented:
+def remove_path(*full_paths, is_augmented=True):
+
+    if not is_augmented:
+        while True:
+            name = ""
             name = input(
                 " Name of the file/directory? to remove or R to return : "
             ).replace("~", str(home_path))
-            full_path = Path(name).absolute()
 
-        if name.lower() == "r":
-            utils.clear()
-            return 0
+            if name.lower() == "r":
+                utils.clear()
+                return 0
 
-        if full_path.exists():
+            paths = name.split(" ")
+
+            full_paths = paths
+
             break
 
-        else:
-            print(f" Path '{full_path}' does not exist")
-            continue
-
-    while True:
-        confirmation = input(
-            f" Are you sure? '{full_path}' will be permanently removed (y/n) : "
-        )
-
-        if confirmation.lower() == "n":
-            return 0
-
-        elif confirmation.lower() == "y" or confirmation == "":
-            try:
-                if full_path.is_dir():
-                    shutil.rmtree(full_path)
-                    print(f" directory '{full_path}' was removed succesfully!")
-
-                elif full_path.is_file():
-                    os.remove(full_path)
-                    print(f" file '{full_path}' was removed succesfully!")
-
-                else:
-                    print(" Error can't delete that.")
-
-            except FileNotFoundError:
-                print(f" path '{full_path}' wasn't found.")
-                return 0
-
-            except PermissionError:
-                print(f" You don't have permission to remove '{full_path}' here")
-                return 0
-
-        else:
-            print(
-                f" '{confirmation}' is invalid, please enter y or enter for yes or n for no."
+    for p in full_paths:
+        while True:
+            confirmation = input(
+                f" Are you sure? '{p}' will be permanently removed (y/n) : "
             )
-            continue
 
-        break
+            if confirmation.lower() == "n":
+                return 0
+
+            elif confirmation.lower() == "y" or confirmation == "":
+                try:
+                    p = Path(p)
+                    if p.is_dir():
+                        shutil.rmtree(p)
+                        print(f" directory '{p}' was removed succesfully!")
+
+                    elif p.is_file():
+                        os.remove(p)
+                        print(f" file '{p}' was removed succesfully!")
+
+                    else:
+                        print(" Error can't delete that.")
+
+                except FileNotFoundError:
+                    print(f" path '{p}' wasn't found.")
+                    return 0
+
+                except PermissionError:
+                    print(f" You don't have permission to remove '{p}' here")
+                    return 0
+
+            else:
+                print(
+                    f" '{confirmation}' is invalid, please enter y or enter for yes or n for no."
+                )
+                continue
+
+            break
 
 
 def copy_path(*targets, destination=Path(), is_augmented=True):
@@ -174,8 +172,6 @@ def copy_path(*targets, destination=Path(), is_augmented=True):
     if is_augmented:
         destination = targets[-1]
         targets = list(targets[0:-2])
-
-        print(targets, destination)
 
     if not Path(destination).exists():
         print(f" '{destination}' does not exist.")
@@ -256,3 +252,4 @@ def edit_file(target=Path(), text_editor="", is_augmented=True):
         run_editor,
         shell=True,
     )
+    print(f" '{target}' has been edited succesfully!")

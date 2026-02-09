@@ -17,59 +17,63 @@ def list_content(*path_list, show_hidden=False, is_augmented=True):
     if not is_augmented:
         path_list = (Path(),)
 
-    print()
     for p in path_list:
-        if str(p) != ".":
-            print(f"\n {p}")
-        try:
-            p = Path(p)
-            directory_content = p.iterdir()
-            directory_list = []
+        if p != "":
+            if str(p) != ".":
+                print(f"\n {p}")
 
-            if not os.listdir(p):
-                print(" There is nothing here.")
-                return 0
+            try:
+                p = Path(p)
+                directory_content = p.iterdir()
+                directory_list = []
 
-            else:
-                row_count = 0
-                row_size = 4
-                num_of_dashes = 90
-                spacing = 20
-                for path in directory_content:
-                    if not show_hidden:
-                        if path.name[0] != ".":
+                if not os.listdir(p):
+                    print(" There is nothing here.")
+                    return 0
+
+                else:
+                    row_count = 0
+                    row_size = 4
+                    num_of_dashes = 90
+                    spacing = 20
+                    for path in directory_content:
+                        if not show_hidden:
+                            if path.name[0] != ".":
+                                directory_list.append(path.name)
+
+                        else:
                             directory_list.append(path.name)
 
-                    else:
-                        directory_list.append(path.name)
+                    directory_sorted = sorted(directory_list, key=str.lower)
+                    print(f" {'-' * num_of_dashes}")
+                    print(" " * spacing, end="")
+                    for sorted_path in directory_sorted:
+                        row_count += 1
+                        print(f" ({sorted_path})", end=" ")
 
-                directory_sorted = sorted(directory_list, key=str.lower)
-                print(f" {'-' * num_of_dashes}")
-                print(" " * spacing, end="")
-                for sorted_path in directory_sorted:
-                    row_count += 1
-                    print(f" ({sorted_path})", end=" ")
+                        # starting a new line except if it's the last path in the list.
+                        if (
+                            row_count >= row_size
+                            and sorted_path != directory_sorted[-1]
+                        ):
+                            print()
+                            print(" " * spacing, end="")
+                            row_count = 0
+                    print(" " * spacing, end="")
 
-                    # starting a new line except if it's the last path in the list.
-                    if row_count >= row_size and sorted_path != directory_sorted[-1]:
-                        print()
-                        print(" " * spacing, end="")
-                        row_count = 0
-                print(" " * spacing, end="")
+                print(f"\n {'-' * 90}")
 
-            print(f"\n {'-' * 90}")
+            except NotADirectoryError:
+                print(f"'{p}' is not a directory.")
 
-        except NotADirectoryError:
-            print(f"'{p}' is not a directory.")
+            except FileNotFoundError:
+                print(f" Path '{p}' was not found.")
 
-        except FileNotFoundError:
-            print(f" Path '{p}' was not found.")
+            except PermissionError:
+                print(f" You don't have permission to list '{p}'.")
 
-        except PermissionError:
-            print(f" You don't have permission to list '{p}'.")
-
-        except Exception as e:
-            print(f" Couldn't proceed {e}")
+            except Exception as e:
+                print(f" Couldn't proceed {e}")
 
 
 def filter_input(
@@ -126,6 +130,7 @@ def menu():
         paths_string = " ".join(augmented_path_list)
 
         if filtered_choice not in options.keys():
+            utils.clear()
             print(f"'{filtered_choice}' is not a valid option.")
             continue
 
@@ -137,11 +142,14 @@ def menu():
             if choice == "1":
                 travel.go_home()
 
+            elif choice == "2 .":
+                list_content(show_hidden=True, is_augmented=False)
+
             elif choice == f"2 {paths_string}":
-                list_content(*augmented_path_list, show_hidden=True, is_augmented=True)
+                list_content(*augmented_path_list, show_hidden=False, is_augmented=True)
 
             elif choice == "2":
-                list_content(is_augmented=False)
+                list_content(show_hidden=False, is_augmented=False)
 
             elif choice == f"3 {paths_string}":
                 travel.change_dir(Path(augmented_path_list[0]), is_augmented=True)
@@ -156,14 +164,10 @@ def menu():
                 edit.create_path(is_augmented=False)
 
             elif choice == f"5 {paths_string}":
-                for p in augmented_path_list:
-                    edit.remove_path(Path(p), is_augmented=True)
+                edit.remove_path(*augmented_path_list, is_augmented=True)
 
             elif choice == "5":
                 edit.remove_path(is_augmented=False)
-
-            elif choice == "6":
-                edit.copy_path(is_augmented=False)
 
             elif choice == f"6 {paths_string}":
                 edit.copy_path(
@@ -171,19 +175,21 @@ def menu():
                     augmented_destination,
                     is_augmented=True,
                 )
+            elif choice == "6":
+                edit.copy_path(is_augmented=False)
 
+            elif choice == f"7 {paths_string}":
+                travel.move_path(
+                    *augmented_path_list, augmented_destination, is_augmented=True
+                )
             elif choice == "7":
                 travel.move_path(is_augmented=False)
 
-            elif choice == f"7 {augmented_path_list} {augmented_destination}":
-                travel.move_path(
-                    augmented_path_list, augmented_destination, is_augmented=True
-                )
             elif choice == "8":
                 edit.edit_file(is_augmented=False)
 
-            elif choice == f"8 {augmented_path_list}":
-                edit.edit_file(augmented_path_list, is_augmented=True)
+            elif choice == f"8 {paths_string}":
+                edit.edit_file(Path(augmented_path_list[0]), is_augmented=True)
 
             elif choice == "9":
                 print(" have a good day! 🫡")
