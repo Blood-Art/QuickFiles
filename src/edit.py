@@ -26,67 +26,69 @@ def create_path(*path_list, type: str = "", is_augmented=True):
                 path_list.append(p)
 
     for path in path_list:
-        while True:
-            if path == home_path:
-                path = str(path).replace(str(home_path), "~")
+        if path != "":
+            while True:
+                if path == home_path:
+                    path = str(path).replace(str(home_path), "~")
 
-            type = input(
-                f" File or directory? (F/D) for '{path}' or R to return : "
-            ).lower()
+                type = input(
+                    f" File or directory? (F/D) for '{path}' or R to return : "
+                ).lower()
 
-            if type != "f" and type != "d" and type != "r":
-                print(" Invalid input, f for file or d for directory")
-                continue
+                if type != "f" and type != "d" and type != "r":
+                    print(" Invalid input, f for file or d for directory")
+                    continue
 
-            if type == "r":
-                return 0
-
-            if type == "f":
-                # if there was no augmented path, ask for input
-
-                try:
-                    if Path(path).exists() and Path(path).is_file():
-                        print(f" File '{path}' already exists.")
-
-                    elif Path(path).exists() and Path(path).is_dir():
-                        print(f" Directory '{path}' already exists.")
-
-                    else:
-                        Path(path).touch()
-                        print(f" File '{path}' was created succesfully!")
-
-                except FileNotFoundError:
-                    print(f" Path '{path}' hasn't been found.")
+                if type == "r":
+                    utils.clear()
                     return 0
 
-                except PermissionError:
-                    print(f" You don't have permission to create '{path}'.")
-                    return 0
+                if type == "f":
+                    # if there was no augmented path, ask for input
 
-            elif type == "d":
-                try:
-                    if Path(path).exists() and Path(path).is_file():
-                        print(f" file '{path}' already exists")
+                    try:
+                        if Path(path).exists() and Path(path).is_file():
+                            print(f" File '{path}' already exists.")
 
-                    elif Path(path).exists() and Path(path).is_dir():
-                        print(f" directory '{path}' already exists")
+                        elif Path(path).exists() and Path(path).is_dir():
+                            print(f" Directory '{path}' already exists.")
 
-                    else:
-                        Path(path).mkdir()
-                        print(f" directory '{path}' was created succesfully!")
+                        else:
+                            Path(path).touch()
+                            print(f" File '{path}' was created succesfully!")
 
-                except FileNotFoundError:
-                    print(f" path '{path}' wasn't found.")
-                    return 0
+                    except FileNotFoundError:
+                        print(f" Path '{path}' hasn't been found.")
+                        return 0
 
-                except PermissionError:
-                    print(f" You don't have permission to create '{path}'")
-                    return 0
+                    except PermissionError:
+                        print(f" You don't have permission to create '{path}'.")
+                        return 0
 
-            break
+                elif type == "d":
+                    try:
+                        if Path(path).exists() and Path(path).is_file():
+                            print(f" file '{path}' already exists")
+
+                        elif Path(path).exists() and Path(path).is_dir():
+                            print(f" directory '{path}' already exists")
+
+                        else:
+                            Path(path).mkdir()
+                            print(f" directory '{path}' was created succesfully!")
+
+                    except FileNotFoundError:
+                        print(f" path '{path}' wasn't found.")
+                        return 0
+
+                    except PermissionError:
+                        print(f" You don't have permission to create '{path}'")
+                        return 0
+
+                break
 
 
-def remove_path(*full_paths, is_augmented=True):
+def remove_path(*full_paths, is_augmented=True, remove_all=False):
 
     if not is_augmented:
         while True:
@@ -105,44 +107,51 @@ def remove_path(*full_paths, is_augmented=True):
 
             break
 
+    if remove_all:
+        full_paths = Path().iterdir()
+
     for p in full_paths:
-        while True:
-            confirmation = input(
-                f" Are you sure? '{p}' will be permanently removed (y/n) : "
-            )
-
-            if confirmation.lower() == "n":
-                return 0
-
-            elif confirmation.lower() == "y" or confirmation == "":
-                try:
-                    p = Path(p)
-                    if p.is_dir():
-                        shutil.rmtree(p)
-                        print(f" directory '{p}' was removed succesfully!")
-
-                    elif p.is_file():
-                        os.remove(p)
-                        print(f" file '{p}' was removed succesfully!")
-
-                    else:
-                        print(" Error can't delete that.")
-
-                except FileNotFoundError:
-                    print(f" path '{p}' wasn't found.")
-                    return 0
-
-                except PermissionError:
-                    print(f" You don't have permission to remove '{p}' here")
-                    return 0
-
-            else:
-                print(
-                    f" '{confirmation}' is invalid, please enter y or enter for yes or n for no."
+        if p != "" and Path(p).exists():
+            while True:
+                confirmation = input(
+                    f" Are you sure? '{p}' will be permanently removed (y/n) : "
                 )
-                continue
 
-            break
+                if confirmation == "n":
+                    break
+
+                elif confirmation == "N":
+                    return 0
+
+                elif confirmation.lower() == "y" or confirmation == "":
+                    try:
+                        p = Path(p)
+                        if p.is_dir():
+                            shutil.rmtree(p)
+                            print(f" directory '{p}' was removed succesfully!")
+
+                        elif p.is_file():
+                            os.remove(p)
+                            print(f" file '{p}' was removed succesfully!")
+
+                        else:
+                            print(" Error can't delete that.")
+
+                    except FileNotFoundError:
+                        print(f" path '{p}' wasn't found.")
+                        return 0
+
+                    except PermissionError:
+                        print(f" You don't have permission to remove '{p}' here")
+                        return 0
+
+                else:
+                    print(
+                        f" '{confirmation}' is invalid, please enter y or enter for yes or n for no."
+                    )
+                    continue
+
+                break
 
 
 def copy_path(*targets, destination=Path(), is_augmented=True):
@@ -156,6 +165,10 @@ def copy_path(*targets, destination=Path(), is_augmented=True):
                 return 0
 
             targets = target_input.split(" ")
+
+            targets = [target for target in targets if Path(target).exists()]
+
+            print(targets)
 
             break
 
@@ -178,28 +191,31 @@ def copy_path(*targets, destination=Path(), is_augmented=True):
         return 0
 
     for target in targets:
-        if not Path(target).exists():
-            print(f" '{target}' does not exist.")
+        if target != "":
+            if not Path(target).exists():
+                print(f" '{target}' does not exist.")
 
-        elif target != "":
-            final_destination = Path(destination) / f"{target}"
-            try:
-                if (
-                    Path(final_destination).exists()
-                    and Path(final_destination).is_file()
-                ):
-                    utils.confirmation(str(final_destination))
-                if Path(target).is_file():
-                    shutil.copy2(target, final_destination)
-                    print(f" File '{target}' was copied to {destination} succesfully!")
+            elif target != "":
+                final_destination = Path(destination) / f"{target}"
+                try:
+                    if (
+                        Path(final_destination).exists()
+                        and Path(final_destination).is_file()
+                    ):
+                        utils.confirmation(str(final_destination))
+                    if Path(target).is_file():
+                        shutil.copy2(target, final_destination)
+                        print(
+                            f" File '{target}' was copied to {destination} succesfully!"
+                        )
 
-                elif Path(target).is_dir():
-                    shutil.copytree(target, final_destination)
-                    print(
-                        f" Directory '{target}' was copied to {destination} succesfully!"
-                    )
-            except Exception as e:
-                print(f" Couldn't Proceed {e}")
+                    elif Path(target).is_dir():
+                        shutil.copytree(target, final_destination)
+                        print(
+                            f" Directory '{target}' was copied to {destination} succesfully!"
+                        )
+                except Exception as e:
+                    print(f" Couldn't Proceed {e}")
 
 
 def edit_file(target=Path(), text_editor="", is_augmented=True):

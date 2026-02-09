@@ -14,10 +14,10 @@ def confirmation(destination):
         )
 
         if confirmation.lower() == "y" or confirmation == "":
-            return confirmation
+            return True
 
         elif confirmation.lower() == "n":
-            return 0
+            return False
 
         else:
             print(

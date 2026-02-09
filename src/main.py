@@ -163,6 +163,11 @@ def menu():
             elif choice == "4":
                 edit.create_path(is_augmented=False)
 
+            elif choice == "5 .":
+                edit.remove_path(
+                    *augmented_path_list, is_augmented=True, remove_all=True
+                )
+
             elif choice == f"5 {paths_string}":
                 edit.remove_path(*augmented_path_list, is_augmented=True)
 

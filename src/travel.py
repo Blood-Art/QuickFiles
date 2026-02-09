@@ -76,31 +76,46 @@ def move_path(*paths, destination=Path(), is_augmented=True):
         destination = paths[-1]
         paths = paths[0:-2]
 
+    has_moved = False
     path_list = []
     for p in paths:
-        try:
-            path_list.append(p)
-            p = Path(p)
-            destination = Path(destination)
-            if not p.exists():
-                print(f" '{p}' does not exist.")
+        if p != "":
+            try:
+                p = Path(p)
+                destination = Path(destination)
+                if not p.exists():
+                    print(f" '{p}' does not exist.")
+                    continue
 
-            final_destination = destination / p.name
+                path_list.append(str(p))
+                final_destination = destination / p.name
 
-            if not p.exists():
-                print(f" '{p}' does not exist.")
+                if not destination.exists():
+                    p.move(destination)
+                    print(f" {p.name} has been renamed to '{destination}' succesfully!")
 
-            if not destination.exists():
-                p.move(destination)
-                print(f" {p.name} has been renamed to '{destination}' succesfully!")
+                else:
+                    if final_destination.exists():
+                        confirmation = utils.confirmation(str(final_destination))
 
-            else:
-                p.move(final_destination)
+                        if confirmation:
+                            p.move(final_destination)
+                            has_moved = True
 
-        except NotADirectoryError:
-            print(f" '{destination}' is not a directory, you can't move '{p}' to it.")
+                        else:
+                            return 0
 
-        except Exception as e:
-            print(f" Couldn't proceed {e}")
+                    else:
+                        has_moved = True
+                        p.move(final_destination)
 
-    print(f" '{', '.join(path_list)}' has been moved to {destination} succesfully!")
+            except NotADirectoryError:
+                print(
+                    f" '{destination}' is not a directory, you can't move '{p}' to it."
+                )
+
+            except Exception as e:
+                print(f" Couldn't proceed {e}")
+
+    if has_moved:
+        print(f" '{', '.join(path_list)}' has been moved to {destination} succesfully!")
