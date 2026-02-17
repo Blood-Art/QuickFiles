@@ -3,7 +3,7 @@
 ### Simple terminal tool for easy file management without having to memorize any shell commands, written in python.
 
 
-# Image
+# Screenshot
 <img src="img1.png">
 
 # Installation
