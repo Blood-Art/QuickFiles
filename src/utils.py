@@ -7,10 +7,10 @@ from os import name
 
 def confirmation(destination):
     while True:
-        destinanion_path = Path(destination)
-        destination_no_name = destination.replace(str(destinanion_path.name), "")
+        destination_path = Path(destination)
+        destination_no_name = destination.replace(str(destination_path.name), "")
         confirmation = input(
-            f"\n WARNING '{destinanion_path.name}' exists in {destination_no_name}, if you choose to continue {destinanion_path.name} will be overwritten are you sure? (y/n) : "
+            f"\n WARNING '{destination_path.name}' exists in {destination_no_name}, if you choose to continue {destination_path.name} will be overwritten are you sure? (y/n) : "
         )
 
         if confirmation.lower() == "y" or confirmation == "":
