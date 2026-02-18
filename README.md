@@ -10,7 +10,7 @@
 
 ### Simply clone this repo to your desired directory, then run main.py found in src.
 ```bash
-git clone https://github.com/Blood-Art/QuickFiles/ && cd src && python3 main.py
+git clone https://github.com/Blood-Art/QuickFiles/ && cd QuickFiles && cd src && python3 main.py
 ```
 
 # Usage
