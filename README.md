@@ -8,7 +8,8 @@
 
 # Installation
 
-### Simply clone this repo to your desired directory git clone https://github.com/Blood-Art/QuickFiles/ 
+### Simply clone this repo to your desired directory 
+``` bash git clone https://github.com/Blood-Art/QuickFiles/ ```
 ### and run the main.py file found in src
 
 # **Usage**
