@@ -1,0 +1,22 @@
+[build-tools]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "QuickFiles"
+version = "0.1.0"
+description = "Quick cli tool to manage system files"
+authors = [{name = "Blood-Art", email = "ibloodartz@gmail.com"}]
+dependencies = [
+    "build>=1.4.0",
+    "setuptools>=82.0.0",
+    "wheel>=0.46.3",
+]
+readme = "README.md"
+license = { file = "MIT"}
+
+
+
+[tool.setuptools]
+packages = ["QuickFiles"]
